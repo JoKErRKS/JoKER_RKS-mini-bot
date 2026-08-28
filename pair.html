@@ -422,31 +422,38 @@ async function getCode() {
     codeBox.innerText = "CONNECTING.....";
 
     try {
-        const res = await fetch(`/code?number=${num}`);
-        const data = await res.json();
-        
-        if (data.code) {
-            codeBox.style.letterSpacing = "4px";
-            codeBox.style.color = "#fff";
-            codeBox.innerText = data.code;
-        } else {
-            codeBox.style.color = "#ff4d6d";
-            codeBox.innerText = "SERVER FULL";
-        }
-    } catch (e) {
+    const res = await fetch(`/code?number=${encodeURIComponent(num)}`);
+
+    const contentType = res.headers.get("content-type") || "";
+    let data;
+
+    if (contentType.includes("application/json")) {
+        data = await res.json();
+    } else {
+        const text = await res.text();
+        throw new Error(text || `HTTP ${res.status}`);
+    }
+
+    if (res.ok && data.code) {
+        codeBox.style.letterSpacing = "4px";
+        codeBox.style.color = "#fff";
+        codeBox.innerText = data.code;
+    } else {
+        codeBox.style.letterSpacing = "normal";
         codeBox.style.color = "#ff4d6d";
-        codeBox.innerText = "SERVER IS FULL";
-    }
-}
 
-// Enter key support
-document.getElementById("number").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") {
-        e.preventDefault();
-        getCode();
+        codeBox.innerText =
+            data.message ||
+            data.error ||
+            `PAIRING FAILED (${res.status})`;
     }
-});
-</script>
 
-</body>
-</html>
+} catch (e) {
+    console.error("PAIRING ERROR:", e);
+
+    codeBox.style.letterSpacing = "normal";
+    codeBox.style.color = "#ff4d6d";
+
+    codeBox.innerText =
+        "PAIRING ERROR: " + (e.message || "Unknown error");
+        }
