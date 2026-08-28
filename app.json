@@ -1,0 +1,23 @@
+{
+  "name": "JoKER_RKS mini PAIR",
+  "description": "SESSION ID GENERATOR FOR JoKER_RKS mini",
+  "logo": "",
+  "repository": "",
+  "keywords": [
+    "JoKER_RKS mini",
+    "AFTAB RKS"
+  ],
+  "success_url": "/",
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-nodejs#latest"
+    }
+  ],
+  "env": {
+    "MESSAGE": {
+      "description": "Msg Attached With Session ID",
+      "value": "🔰 BY || JoKER_RKS mini || OWNER: AFTAB RKS 🔰",
+      "required": false
+    }
+  }
+}
